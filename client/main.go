@@ -13,8 +13,8 @@ import (
 
 	"github.com/golang/snappy"
 	"github.com/hashicorp/yamux"
+	kcp "github.com/madeye/kcp-go"
 	"github.com/urfave/cli"
-	kcp "github.com/xtaci/kcp-go"
 )
 
 var (
