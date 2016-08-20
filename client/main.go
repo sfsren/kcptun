@@ -166,6 +166,10 @@ func main() {
 			Name:  "nocomp",
 			Usage: "disable compression",
 		},
+		cli.BoolFlag{
+			Name:  "sid",
+			Usage: "enable session id",
+		},
 		cli.IntFlag{
 			Name:   "nodelay",
 			Value:  0,
@@ -247,6 +251,7 @@ func main() {
 		mtu, sndwnd, rcvwnd := c.Int("mtu"), c.Int("sndwnd"), c.Int("rcvwnd")
 		nocomp, acknodelay := c.Bool("nocomp"), c.Bool("acknodelay")
 		dscp, sockbuf, keepalive, conn := c.Int("dscp"), c.Int("sockbuf"), c.Int("keepalive"), c.Int("conn")
+		hasSid := c.Bool("sid")
 
 		log.Println("listening on:", listener.Addr())
 		log.Println("encryption:", crypt)
@@ -254,6 +259,7 @@ func main() {
 		log.Println("remote address:", remoteaddr)
 		log.Println("sndwnd:", sndwnd, "rcvwnd:", rcvwnd)
 		log.Println("compression:", !nocomp)
+		log.Println("session id:", hasSid)
 		log.Println("mtu:", mtu)
 		log.Println("datashard:", datashard, "parityshard:", parityshard)
 		log.Println("acknodelay:", acknodelay)
@@ -271,7 +277,7 @@ func main() {
 			LogOutput:              os.Stderr,
 		}
 		createConn := func() *yamux.Session {
-			kcpconn, err := kcp.DialWithOptions(remoteaddr, block, datashard, parityshard)
+			kcpconn, err := kcp.DialWithOptions(remoteaddr, hasSid, block, datashard, parityshard)
 			checkError(err)
 			kcpconn.SetStreamMode(true)
 			kcpconn.SetNoDelay(nodelay, interval, resend, nc)
